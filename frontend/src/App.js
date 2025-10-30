@@ -1,23 +1,26 @@
 import { useEffect } from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-import Printing from "./pages/Printing";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import PrintingWithBackend from "./pages/PrintingWithBackend";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import { Toaster } from "./components/ui/toaster";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Printing />} />
-          <Route path="/printing" element={<Printing />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Navigate to="/printing" replace />} />
+            <Route path="/printing" element={<PrintingWithBackend />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+          <Toaster />
+        </AuthProvider>
       </BrowserRouter>
-      <Toaster />
     </div>
   );
 }
