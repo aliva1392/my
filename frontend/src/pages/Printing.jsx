@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -11,15 +12,10 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { HelpCircle, Upload, MessageCircle, Send, Link as LinkIcon, Mail, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { HelpCircle, Upload, MessageCircle, Send, Link as LinkIcon, Mail, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
-import {
-  paperSizes,
-  colorClasses,
-  printTypes,
-  services,
-  calculatePrice
-} from '../data/mockPricing';
+import { useAuth } from '../contexts/AuthContext';
+import { pricingAPI, cartAPI, orderAPI } from '../services/api';
 
 const Printing = () => {
   const [paperSize, setPaperSize] = useState('');
