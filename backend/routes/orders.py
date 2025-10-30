@@ -1,16 +1,12 @@
 from fastapi import APIRouter, HTTPException, Header
-from motor.motor_asyncio import AsyncIOMotorClient
-import os
 from models.order import OrderCreate, OrderResponse, Order, OrderItem
 from utils.auth import decode_access_token
 from typing import List, Optional
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
-# Get database
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Database dependency will be injected from server.py
+from server import db
 
 async def get_user_from_token(authorization: str):
     if not authorization or not authorization.startswith("Bearer "):
