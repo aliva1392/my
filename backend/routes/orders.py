@@ -2,11 +2,9 @@ from fastapi import APIRouter, HTTPException, Header
 from models.order import OrderCreate, OrderResponse, Order, OrderItem
 from utils.auth import decode_access_token
 from typing import List, Optional
+from database import db
 
 router = APIRouter(prefix="/orders", tags=["orders"])
-
-# Database dependency will be injected from server.py
-from server import db
 
 async def get_user_from_token(authorization: str):
     if not authorization or not authorization.startswith("Bearer "):
