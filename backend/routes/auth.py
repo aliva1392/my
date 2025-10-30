@@ -1,15 +1,11 @@
-from fastapi import APIRouter, HTTPException, Header
-from motor.motor_asyncio import AsyncIOMotorClient
-import os
+from fastapi import APIRouter, HTTPException, Header, Depends
 from models.user import UserCreate, UserLogin, UserResponse, AuthResponse
 from utils.auth import hash_password, verify_password, create_access_token, decode_access_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-# Get database
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Database dependency will be injected from server.py
+from server import db
 
 @router.post("/register", response_model=AuthResponse)
 async def register(user_data: UserCreate):
