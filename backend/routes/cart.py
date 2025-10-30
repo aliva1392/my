@@ -3,11 +3,9 @@ from models.cart import CartItemCreate, CartResponse, CartItem, Cart
 from utils.auth import decode_access_token
 from datetime import datetime
 import uuid
+from database import db
 
 router = APIRouter(prefix="/cart", tags=["cart"])
-
-# Database dependency will be injected from server.py
-from server import db
 
 async def get_user_from_token(authorization: str):
     if not authorization or not authorization.startswith("Bearer "):
