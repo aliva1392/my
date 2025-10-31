@@ -8,6 +8,8 @@ import Register from "./pages/Register";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminOrders from "./pages/AdminOrders";
+import AdminUsers from "./pages/AdminUsers";
+import AdminPricing from "./pages/AdminPricing";
 import { Toaster } from "./components/ui/toaster";
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/pricing" element={<AdminPricing />} />
           </Routes>
           <Toaster />
         </AuthProvider>
