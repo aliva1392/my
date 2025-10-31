@@ -586,10 +586,24 @@ class APITester:
         results["auth_login"] = self.test_auth_login()
         results["auth_me"] = self.test_auth_me()
         
-        # Pricing Tests
-        self.log("\n--- PRICING TESTS ---")
+        # Admin Setup
+        self.log("\n--- ADMIN SETUP ---")
+        results["admin_setup"] = self.test_admin_user_setup()
+        
+        # Admin Pricing Tests (New)
+        self.log("\n--- ADMIN PRICING TESTS ---")
+        results["admin_get_pricing"] = self.test_admin_get_pricing()
+        results["admin_initialize_pricing"] = self.test_admin_initialize_pricing()
+        results["admin_update_service"] = self.test_admin_update_service_price()
+        results["admin_update_tier"] = self.test_admin_update_pricing_tier()
+        results["admin_edge_cases"] = self.test_admin_edge_cases()
+        results["non_admin_access"] = self.test_non_admin_access()
+        
+        # Updated Pricing Tests (Database Integration)
+        self.log("\n--- PRICING TESTS (DATABASE INTEGRATION) ---")
         results["pricing_list"] = self.test_pricing_list()
         results["pricing_calculate"] = self.test_pricing_calculate()
+        results["pricing_database_integration"] = self.test_pricing_database_integration()
         
         # Cart Tests
         self.log("\n--- CART TESTS ---")
@@ -612,7 +626,7 @@ class APITester:
         
         for test_name, result in results.items():
             status = "✓ PASS" if result else "✗ FAIL"
-            self.log(f"{test_name:20} : {status}")
+            self.log(f"{test_name:25} : {status}")
             if result:
                 passed += 1
                 
