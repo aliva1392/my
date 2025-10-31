@@ -173,6 +173,11 @@ async def get_user_orders(user_id: str, admin_id: str = Depends(verify_admin)):
     if not user:
         raise HTTPException(status_code=404, detail="کاربر پیدا نشد")
     
+    # Remove MongoDB _id from orders
+    for order in orders:
+        order.pop('_id', None)
+    
+    user.pop('_id', None)
     user.pop('password', None)
     
     return {
