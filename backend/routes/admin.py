@@ -150,8 +150,9 @@ async def get_all_users(
     users = await db.users.find({}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     total = await db.users.count_documents({})
     
-    # Get order count for each user
+    # Get order count for each user and remove MongoDB _id
     for user in users:
+        user.pop('_id', None)  # Remove MongoDB _id
         order_count = await db.orders.count_documents({"user_id": user['id']})
         user['order_count'] = order_count
         # Remove password from response
