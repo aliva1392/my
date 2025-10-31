@@ -165,7 +165,7 @@ backend:
     file: "/app/backend/routes/pricing.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "testing"
@@ -173,6 +173,9 @@ backend:
         - working: "NA"
           agent: "main"
           comment: "Updated to use database-backed pricing system. Calculation logic now reads from MongoDB. Needs retesting."
+        - working: true
+          agent: "testing"
+          comment: "✓ Database integration tested successfully. POST /api/pricing/calculate now uses MongoDB pricing data. Verified updated prices: tier 0 single=1200, hotglue service=20000. Calculations accurate with database values."
 
   - task: "Admin Pricing - Get Pricing Config"
     implemented: true
