@@ -61,19 +61,33 @@ class PriceCalculationResponse(BaseModel):
 
 @router.get("/")
 async def get_pricing_data():
+    pricing_config = await get_pricing_from_db()
+    pricing_config.pop('_id', None)
+    
     return {
-        "paper_sizes": paper_sizes,
-        "color_classes": color_classes,
-        "print_types": print_types,
-        "services": services
+        "paper_sizes": pricing_config.get('paper_sizes'),
+        "color_classes": pricing_config.get('color_classes'),
+        "print_types": pricing_config.get('print_types'),
+        "services": pricing_config.get('services')
     }
 
 @router.post("/calculate", response_model=PriceCalculationResponse)
 async def calculate_pricing(request: PriceCalculationRequest):
+    pricing_config = await get_pricing_from_db()
+    
     total_pages = request.pages * request.copies
-    price_per_page = calculate_price(request.color_class, request.print_type, total_pages)
+    price_per_page = calculate_price_from_config(
+        pricing_config.get('pricing_tiers', {}),
+        request.color_class,
+        request.print_type,
+        total_pages
+    )
     price_per_copy = price_per_page * request.pages
-    service_cost = get_service_cost(request.service, request.pages)
+    service_cost = get_service_cost_from_config(
+        pricing_config.get('services', []),
+        request.service,
+        request.pages
+    )
     total = (price_per_copy * request.copies) + service_cost
     
     return PriceCalculationResponse(
