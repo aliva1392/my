@@ -161,7 +161,7 @@ const AdminPricing = () => {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => navigate(`/admin/pricing/edit/a4-bw/${index}`)}
+                            onClick={() => navigate(`/admin/pricing/edit/a4_bw_simple/${index}`)}
                           >
                             ویرایش
                           </Button>
