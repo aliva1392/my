@@ -205,7 +205,11 @@ const AdminPricing = () => {
                           {tier.double.toLocaleString('fa-IR')} تومان
                         </td>
                         <td className="p-3">
-                          <Button variant="outline" size="sm" disabled>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => navigate(`/admin/pricing/edit/a4-color/${index}`)}
+                          >
                             ویرایش
                           </Button>
                         </td>
