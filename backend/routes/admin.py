@@ -190,14 +190,139 @@ async def get_user_orders(user_id: str, admin_id: str = Depends(verify_admin)):
 # Pricing Management
 @router.get("/pricing")
 async def get_pricing_config(admin_id: str = Depends(verify_admin)):
+    # Try to get pricing from database first
+    pricing_doc = await db.pricing_config.find_one({"id": "pricing_config"})
+    
+    if not pricing_doc:
+        # If no pricing in DB, initialize from hardcoded values
+        from utils.pricing import paper_sizes, color_classes, print_types, services, pricing_tiers
+        pricing_data = {
+            "id": "pricing_config",
+            "paper_sizes": paper_sizes,
+            "color_classes": color_classes,
+            "print_types": print_types,
+            "services": services,
+            "pricing_tiers": pricing_tiers
+        }
+        await db.pricing_config.insert_one(pricing_data)
+        pricing_doc = pricing_data
+    
+    # Remove MongoDB _id
+    pricing_doc.pop('_id', None)
+    return pricing_doc
+
+@router.post("/pricing/initialize")
+async def initialize_pricing(admin_id: str = Depends(verify_admin)):
+    """Initialize or reset pricing to default values"""
     from utils.pricing import paper_sizes, color_classes, print_types, services, pricing_tiers
-    return {
+    
+    pricing_data = {
+        "id": "pricing_config",
         "paper_sizes": paper_sizes,
         "color_classes": color_classes,
         "print_types": print_types,
         "services": services,
         "pricing_tiers": pricing_tiers
     }
+    
+    # Upsert (update if exists, insert if not)
+    await db.pricing_config.replace_one(
+        {"id": "pricing_config"},
+        pricing_data,
+        upsert=True
+    )
+    
+    return {"message": "قیمت‌ها با موفقیت مقداردهی شدند", "data": pricing_data}
 
-# Note: For pricing updates, you would need to implement a database-backed pricing system
-# Currently prices are in code. For production, move to database.
+class ServiceUpdateModel(BaseModel):
+    price: float
+    min_pages: Optional[int] = None
+
+@router.put("/pricing/service/{service_id}")
+async def update_service_price(
+    service_id: str,
+    service_update: ServiceUpdateModel,
+    admin_id: str = Depends(verify_admin)
+):
+    """Update service pricing"""
+    pricing_doc = await db.pricing_config.find_one({"id": "pricing_config"})
+    
+    if not pricing_doc:
+        raise HTTPException(status_code=404, detail="تنظیمات قیمت پیدا نشد")
+    
+    # Find and update the service
+    services = pricing_doc.get('services', [])
+    service_found = False
+    
+    for service in services:
+        if service['id'] == service_id:
+            service['price'] = service_update.price
+            if service_update.min_pages is not None:
+                service['min_pages'] = service_update.min_pages
+            elif 'min_pages' in service and service_update.min_pages is None:
+                # Keep existing min_pages if not provided
+                pass
+            service_found = True
+            break
+    
+    if not service_found:
+        raise HTTPException(status_code=404, detail="خدمت پیدا نشد")
+    
+    # Update in database
+    await db.pricing_config.update_one(
+        {"id": "pricing_config"},
+        {"$set": {"services": services}}
+    )
+    
+    return {"message": "قیمت خدمت با موفقیت به‌روز شد", "service_id": service_id}
+
+class TierUpdateModel(BaseModel):
+    min: int
+    max: float
+    single: float
+    double: float
+
+@router.put("/pricing/tier/{color_class_id}/{tier_index}")
+async def update_pricing_tier(
+    color_class_id: str,
+    tier_index: int,
+    tier_update: TierUpdateModel,
+    admin_id: str = Depends(verify_admin)
+):
+    """Update pricing tier for a specific color class"""
+    pricing_doc = await db.pricing_config.find_one({"id": "pricing_config"})
+    
+    if not pricing_doc:
+        raise HTTPException(status_code=404, detail="تنظیمات قیمت پیدا نشد")
+    
+    pricing_tiers = pricing_doc.get('pricing_tiers', {})
+    
+    if color_class_id not in pricing_tiers:
+        raise HTTPException(status_code=404, detail="کلاس رنگی پیدا نشد")
+    
+    tiers = pricing_tiers[color_class_id]
+    
+    if tier_index < 0 or tier_index >= len(tiers):
+        raise HTTPException(status_code=404, detail="رده قیمتی پیدا نشد")
+    
+    # Update the tier
+    tiers[tier_index] = {
+        'min': tier_update.min,
+        'max': tier_update.max,
+        'single': tier_update.single,
+        'double': tier_update.double
+    }
+    
+    pricing_tiers[color_class_id] = tiers
+    
+    # Update in database
+    await db.pricing_config.update_one(
+        {"id": "pricing_config"},
+        {"$set": {"pricing_tiers": pricing_tiers}}
+    )
+    
+    return {
+        "message": "تعرفه با موفقیت به‌روز شد",
+        "color_class_id": color_class_id,
+        "tier_index": tier_index
+    }
