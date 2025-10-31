@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import PrintingWithBackend from "./pages/PrintingWithBackend";
+import Printing from "./pages/Printing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { Toaster } from "./components/ui/toaster";
@@ -14,7 +14,7 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Navigate to="/printing" replace />} />
-            <Route path="/printing" element={<PrintingWithBackend />} />
+            <Route path="/printing" element={<Printing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Routes>
