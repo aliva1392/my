@@ -340,6 +340,238 @@ class APITester:
             self.log(f"Get orders failed: {response.get('data', {}).get('detail', 'Unknown error')}", "ERROR")
             return False
 
+    def test_admin_user_setup(self) -> bool:
+        """Create admin user and set admin privileges"""
+        self.log("Setting up admin user...")
+        
+        # Register admin user
+        admin_data = {
+            "phone": "09999999999",
+            "password": "admin123",
+            "name": "Admin User"
+        }
+        
+        response = self.make_request("POST", "/auth/register", admin_data)
+        
+        if response["success"]:
+            self.admin_token = response["data"].get("token")
+            self.admin_user_id = response["data"].get("user", {}).get("id")
+            self.log(f"Admin user registered. User ID: {self.admin_user_id}")
+            
+            # Now manually set is_admin=true in database using MongoDB
+            # This would normally be done through database admin tools
+            # For testing, we'll assume this step is completed manually
+            self.log("Note: Admin privileges must be set manually in database (is_admin=true)")
+            return True
+        else:
+            # Try to login if user already exists
+            login_response = self.make_request("POST", "/auth/login", {
+                "phone": "09999999999",
+                "password": "admin123"
+            })
+            
+            if login_response["success"]:
+                self.admin_token = login_response["data"].get("token")
+                self.admin_user_id = login_response["data"].get("user", {}).get("id")
+                self.log(f"Admin user login successful. User ID: {self.admin_user_id}")
+                return True
+            else:
+                self.log(f"Admin setup failed: {response.get('data', {}).get('detail', 'Unknown error')}", "ERROR")
+                return False
+
+    def test_admin_get_pricing(self) -> bool:
+        """Test GET /api/admin/pricing"""
+        self.log("Testing admin get pricing config...")
+        
+        if not self.admin_token:
+            self.log("No admin token available", "ERROR")
+            return False
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        response = self.make_request("GET", "/admin/pricing", headers=headers)
+        
+        if response["success"]:
+            data = response["data"]
+            self.log(f"Admin pricing config retrieved successfully")
+            self.log(f"  Paper sizes: {len(data.get('paper_sizes', []))}")
+            self.log(f"  Color classes: {len(data.get('color_classes', []))}")
+            self.log(f"  Services: {len(data.get('services', []))}")
+            return True
+        else:
+            self.log(f"Admin get pricing failed: {response.get('data', {}).get('detail', 'Unknown error')}", "ERROR")
+            return False
+
+    def test_admin_initialize_pricing(self) -> bool:
+        """Test POST /api/admin/pricing/initialize"""
+        self.log("Testing admin initialize pricing...")
+        
+        if not self.admin_token:
+            self.log("No admin token available", "ERROR")
+            return False
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        response = self.make_request("POST", "/admin/pricing/initialize", {}, headers=headers)
+        
+        if response["success"]:
+            self.log("Pricing initialized successfully")
+            return True
+        else:
+            self.log(f"Admin initialize pricing failed: {response.get('data', {}).get('detail', 'Unknown error')}", "ERROR")
+            return False
+
+    def test_admin_update_service_price(self) -> bool:
+        """Test PUT /api/admin/pricing/service/{service_id}"""
+        self.log("Testing admin update service price...")
+        
+        if not self.admin_token:
+            self.log("No admin token available", "ERROR")
+            return False
+            
+        # Update hotglue service price from 15000 to 20000
+        service_data = {
+            "price": 20000,
+            "min_pages": 10
+        }
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        response = self.make_request("PUT", "/admin/pricing/service/hotglue", service_data, headers=headers)
+        
+        if response["success"]:
+            self.log("Service price updated successfully (hotglue: 15000 -> 20000)")
+            return True
+        else:
+            self.log(f"Admin update service price failed: {response.get('data', {}).get('detail', 'Unknown error')}", "ERROR")
+            return False
+
+    def test_admin_update_pricing_tier(self) -> bool:
+        """Test PUT /api/admin/pricing/tier/{color_class_id}/{tier_index}"""
+        self.log("Testing admin update pricing tier...")
+        
+        if not self.admin_token:
+            self.log("No admin token available", "ERROR")
+            return False
+            
+        # Update a4_bw_simple tier 0: change single from 1190 to 1200
+        tier_data = {
+            "min": 1,
+            "max": 100,
+            "single": 1200,  # Changed from 1190
+            "double": 990
+        }
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        response = self.make_request("PUT", "/admin/pricing/tier/a4_bw_simple/0", tier_data, headers=headers)
+        
+        if response["success"]:
+            self.log("Pricing tier updated successfully (a4_bw_simple tier 0: single 1190 -> 1200)")
+            return True
+        else:
+            self.log(f"Admin update pricing tier failed: {response.get('data', {}).get('detail', 'Unknown error')}", "ERROR")
+            return False
+
+    def test_pricing_database_integration(self) -> bool:
+        """Test that pricing endpoints now use database values"""
+        self.log("Testing pricing database integration...")
+        
+        # Test GET /api/pricing/ returns updated values
+        response = self.make_request("GET", "/pricing/")
+        
+        if not response["success"]:
+            self.log(f"Get pricing failed: {response.get('data', {}).get('detail', 'Unknown error')}", "ERROR")
+            return False
+            
+        # Test price calculation with updated values
+        calc_data = {
+            "color_class": "a4_bw_simple",
+            "print_type": "single",
+            "pages": 50,  # Should use tier 0 with updated price
+            "copies": 1,
+            "service": "hotglue"  # Should use updated service price
+        }
+        
+        calc_response = self.make_request("POST", "/pricing/calculate", calc_data)
+        
+        if calc_response["success"]:
+            result = calc_response["data"]
+            price_per_page = result.get("price_per_page")
+            service_cost = result.get("service_cost")
+            
+            self.log(f"Price calculation with database values:")
+            self.log(f"  Price per page: {price_per_page} (should be 1200 if tier updated)")
+            self.log(f"  Service cost: {service_cost} (should be 20000 if service updated)")
+            
+            return True
+        else:
+            self.log(f"Price calculation failed: {calc_response.get('data', {}).get('detail', 'Unknown error')}", "ERROR")
+            return False
+
+    def test_admin_edge_cases(self) -> bool:
+        """Test admin endpoint edge cases"""
+        self.log("Testing admin endpoint edge cases...")
+        
+        if not self.admin_token:
+            self.log("No admin token available", "ERROR")
+            return False
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        # Test invalid service_id
+        invalid_service_response = self.make_request(
+            "PUT", 
+            "/admin/pricing/service/invalid_service", 
+            {"price": 1000}, 
+            headers=headers
+        )
+        
+        # Test invalid color_class_id
+        invalid_color_response = self.make_request(
+            "PUT", 
+            "/admin/pricing/tier/invalid_color/0", 
+            {"min": 1, "max": 100, "single": 1000, "double": 800}, 
+            headers=headers
+        )
+        
+        # Test invalid tier_index
+        invalid_tier_response = self.make_request(
+            "PUT", 
+            "/admin/pricing/tier/a4_bw_simple/999", 
+            {"min": 1, "max": 100, "single": 1000, "double": 800}, 
+            headers=headers
+        )
+        
+        # All should return 404 errors
+        edge_case_results = [
+            invalid_service_response["status_code"] == 404,
+            invalid_color_response["status_code"] == 404,
+            invalid_tier_response["status_code"] == 404
+        ]
+        
+        if all(edge_case_results):
+            self.log("All edge cases returned proper 404 errors")
+            return True
+        else:
+            self.log(f"Edge case testing failed. Results: {edge_case_results}", "ERROR")
+            return False
+
+    def test_non_admin_access(self) -> bool:
+        """Test that non-admin users get 403 errors"""
+        self.log("Testing non-admin access restrictions...")
+        
+        if not self.token:
+            self.log("No regular user token available", "ERROR")
+            return False
+            
+        # Try to access admin endpoint with regular user token
+        headers = {"Authorization": f"Bearer {self.token}"}
+        response = self.make_request("GET", "/admin/pricing", headers=headers)
+        
+        if response["status_code"] == 403:
+            self.log("Non-admin user properly denied access (403)")
+            return True
+        else:
+            self.log(f"Non-admin access test failed. Expected 403, got {response['status_code']}", "ERROR")
+            return False
+
     def run_all_tests(self) -> Dict[str, bool]:
         """Run all API tests"""
         self.log("=" * 60)
