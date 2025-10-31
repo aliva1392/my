@@ -10,7 +10,7 @@ import sys
 from typing import Dict, Any, Optional
 
 # Get backend URL from frontend .env
-BACKEND_URL = "https://copydash.preview.emergentagent.com/api"
+BACKEND_URL = "https://printctrl.preview.emergentagent.com/api"
 
 class APITester:
     def __init__(self):
