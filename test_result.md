@@ -224,15 +224,18 @@ backend:
 
   - task: "Admin Pricing - Update Pricing Tier"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/routes/admin.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "PUT /api/admin/pricing/tier/{color_class_id}/{tier_index} - New endpoint to update pricing tiers. Accepts min, max, single, double prices. Updates specific tier in database."
+        - working: true
+          agent: "testing"
+          comment: "✓ PUT /api/admin/pricing/tier/{color_class_id}/{tier_index} tested successfully. Updated a4_bw_simple tier 0 single price from 1190 to 1200. Persists in MongoDB. Returns 404 for invalid color_class_id or tier_index. Requires admin authentication."
 
   - task: "Cart API - Add to Cart"
     implemented: true
