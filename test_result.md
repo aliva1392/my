@@ -179,15 +179,18 @@ backend:
 
   - task: "Admin Pricing - Get Pricing Config"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/routes/admin.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "GET /api/admin/pricing - Enhanced to fetch from database with auto-initialization if not exists. Returns paper_sizes, color_classes, print_types, services, and pricing_tiers."
+        - working: true
+          agent: "testing"
+          comment: "✓ GET /api/admin/pricing tested successfully. Requires admin authentication (Bearer token). Returns complete pricing config from MongoDB: 3 paper sizes, 3 color classes, 8 services. Auto-initializes if not exists."
 
   - task: "Admin Pricing - Initialize Pricing"
     implemented: true
