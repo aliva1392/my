@@ -43,6 +43,8 @@ class APITester:
                 response = requests.post(url, json=data, headers=headers)
             elif method.upper() == "DELETE":
                 response = requests.delete(url, headers=headers)
+            elif method.upper() == "PUT":
+                response = requests.put(url, json=data, headers=headers)
             else:
                 raise ValueError(f"Unsupported method: {method}")
                 
