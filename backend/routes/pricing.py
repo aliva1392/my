@@ -1,16 +1,49 @@
 from fastapi import APIRouter, HTTPException
-from utils.pricing import (
-    paper_sizes,
-    color_classes,
-    print_types,
-    services,
-    pricing_tiers,
-    calculate_price,
-    get_service_cost
-)
 from pydantic import BaseModel
+from database import db
 
 router = APIRouter(prefix="/pricing", tags=["pricing"])
+
+async def get_pricing_from_db():
+    """Get pricing configuration from database, fallback to hardcoded if not found"""
+    pricing_doc = await db.pricing_config.find_one({"id": "pricing_config"})
+    
+    if not pricing_doc:
+        # Initialize from hardcoded values
+        from utils.pricing import paper_sizes, color_classes, print_types, services, pricing_tiers
+        pricing_data = {
+            "id": "pricing_config",
+            "paper_sizes": paper_sizes,
+            "color_classes": color_classes,
+            "print_types": print_types,
+            "services": services,
+            "pricing_tiers": pricing_tiers
+        }
+        await db.pricing_config.insert_one(pricing_data)
+        return pricing_data
+    
+    return pricing_doc
+
+def calculate_price_from_config(pricing_tiers: dict, color_class_id: str, print_type: str, total_pages: int) -> float:
+    tiers = pricing_tiers.get(color_class_id)
+    if not tiers:
+        return 0
+    
+    for tier in tiers:
+        if tier['min'] <= total_pages <= tier['max']:
+            return tier.get(print_type, 0)
+    
+    return 0
+
+def get_service_cost_from_config(services: list, service_id: str, pages: int) -> float:
+    service = next((s for s in services if s['id'] == service_id), None)
+    if not service:
+        return 0
+    
+    if 'min_pages' in service and pages < service['min_pages']:
+        return 0
+    
+    return service['price']
 
 class PriceCalculationRequest(BaseModel):
     color_class: str
