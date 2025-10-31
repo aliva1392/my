@@ -147,7 +147,7 @@ backend:
     file: "/app/backend/routes/pricing.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "testing"
@@ -155,6 +155,9 @@ backend:
         - working: "NA"
           agent: "main"
           comment: "Updated to use database-backed pricing system. Now fetches from MongoDB with fallback to hardcoded values. Needs retesting."
+        - working: true
+          agent: "testing"
+          comment: "✓ Database integration tested successfully. GET /api/pricing/ now reads from MongoDB pricing_config collection. Auto-initializes if not exists. Returns updated pricing data correctly."
 
   - task: "Pricing API - Calculate Price"
     implemented: true
