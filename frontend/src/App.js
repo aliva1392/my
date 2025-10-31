@@ -8,7 +8,9 @@ import Register from "./pages/Register";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminOrders from "./pages/AdminOrders";
+import AdminOrderDetail from "./pages/AdminOrderDetail";
 import AdminUsers from "./pages/AdminUsers";
+import AdminUserDetail from "./pages/AdminUserDetail";
 import AdminPricing from "./pages/AdminPricing";
 import { Toaster } from "./components/ui/toaster";
 
@@ -25,7 +27,9 @@ function App() {
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/orders/:orderId" element={<AdminOrderDetail />} />
             <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/users/:userId" element={<AdminUserDetail />} />
             <Route path="/admin/pricing" element={<AdminPricing />} />
           </Routes>
           <Toaster />
