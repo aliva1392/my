@@ -18,6 +18,7 @@ from routes.pricing import router as pricing_router
 from routes.cart import router as cart_router
 from routes.orders import router as orders_router
 from routes.admin import router as admin_router
+from routes.pricing_admin import router as pricing_admin_router
 
 
 ROOT_DIR = Path(__file__).parent
