@@ -12,6 +12,7 @@ import AdminOrderDetail from "./pages/AdminOrderDetail";
 import AdminUsers from "./pages/AdminUsers";
 import AdminUserDetail from "./pages/AdminUserDetail";
 import AdminPricing from "./pages/AdminPricing";
+import AdminPricingEdit from "./pages/AdminPricingEdit";
 import { Toaster } from "./components/ui/toaster";
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/users/:userId" element={<AdminUserDetail />} />
             <Route path="/admin/pricing" element={<AdminPricing />} />
+            <Route path="/admin/pricing/edit/:colorClassId" element={<AdminPricingEdit />} />
           </Routes>
           <Toaster />
         </AuthProvider>
