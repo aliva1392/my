@@ -17,6 +17,8 @@ class APITester:
         self.base_url = BACKEND_URL
         self.token = None
         self.user_id = None
+        self.admin_token = None
+        self.admin_user_id = None
         self.cart_items = []
         self.orders = []
         
