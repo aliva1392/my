@@ -55,64 +55,64 @@ pricing_tiers = {
     'a3_bw_simple': [
         {'min': 1, 'max': 499, 'single': 2600, 'double': 2980},
         {'min': 500, 'max': 999, 'single': 1980, 'double': 2800},
-        {'min': 1000, 'max': float('inf'), 'single': 1800, 'double': 2500}
+        {'min': 1000, 'max': 999999, 'single': 1800, 'double': 2500}
     ],
     'a3_bw_medium': [
         {'min': 1, 'max': 499, 'single': 2800, 'double': 3200},
         {'min': 500, 'max': 999, 'single': 2200, 'double': 3000},
-        {'min': 1000, 'max': float('inf'), 'single': 2000, 'double': 2700}
+        {'min': 1000, 'max': 999999, 'single': 2000, 'double': 2700}
     ],
     'a3_color_80': [
         {'min': 1, 'max': 499, 'single': 18000, 'double': 35000},
         {'min': 500, 'max': 999, 'single': 16000, 'double': 31000},
-        {'min': 1000, 'max': float('inf'), 'single': 15000, 'double': 29000}
+        {'min': 1000, 'max': 999999, 'single': 15000, 'double': 29000}
     ],
     'a3_color_glossy_200': [
-        {'min': 1, 'max': float('inf'), 'single': 30000, 'double': 58000}
+        {'min': 1, 'max': 999999, 'single': 30000, 'double': 58000}
     ],
     'a3_color_glossy_250': [
-        {'min': 1, 'max': float('inf'), 'single': 35000, 'double': 68000}
+        {'min': 1, 'max': 999999, 'single': 35000, 'double': 68000}
     ],
     'a4_bw_simple': [
         {'min': 1, 'max': 499, 'single': 1190, 'double': 1490},
         {'min': 500, 'max': 999, 'single': 990, 'double': 1390},
-        {'min': 1000, 'max': float('inf'), 'single': 890, 'double': 1190}
+        {'min': 1000, 'max': 999999, 'single': 890, 'double': 1190}
     ],
     'a4_bw_medium': [
         {'min': 1, 'max': 499, 'single': 1390, 'double': 1690},
         {'min': 500, 'max': 999, 'single': 1190, 'double': 1590},
-        {'min': 1000, 'max': float('inf'), 'single': 1090, 'double': 1390}
+        {'min': 1000, 'max': 999999, 'single': 1090, 'double': 1390}
     ],
     'a4_color_80': [
         {'min': 1, 'max': 99, 'single': 5500, 'double': 10500},
         {'min': 100, 'max': 499, 'single': 4500, 'double': 8500},
         {'min': 500, 'max': 999, 'single': 3500, 'double': 6500},
-        {'min': 1000, 'max': float('inf'), 'single': 2500, 'double': 4500}
+        {'min': 1000, 'max': 999999, 'single': 2500, 'double': 4500}
     ],
     'a4_color_glossy_135': [
         {'min': 1, 'max': 99, 'single': 8000, 'double': 15000},
-        {'min': 100, 'max': float('inf'), 'single': 7000, 'double': 13000}
+        {'min': 100, 'max': 999999, 'single': 7000, 'double': 13000}
     ],
     'a4_color_glossy_300': [
-        {'min': 1, 'max': float('inf'), 'single': 15000, 'double': 29000}
+        {'min': 1, 'max': 999999, 'single': 15000, 'double': 29000}
     ],
     'a5_bw_simple': [
         {'min': 1, 'max': 499, 'single': 790, 'double': 890},
         {'min': 500, 'max': 1000, 'single': 750, 'double': 850},
-        {'min': 1001, 'max': float('inf'), 'single': 690, 'double': 790}
+        {'min': 1001, 'max': 999999, 'single': 690, 'double': 790}
     ],
     'a5_bw_medium': [
         {'min': 1, 'max': 499, 'single': 990, 'double': 1090},
         {'min': 500, 'max': 1000, 'single': 950, 'double': 1050},
-        {'min': 1001, 'max': float('inf'), 'single': 890, 'double': 990}
+        {'min': 1001, 'max': 999999, 'single': 890, 'double': 990}
     ],
     'a5_color_80': [
         {'min': 1, 'max': 99, 'single': 3500, 'double': 6500},
         {'min': 100, 'max': 499, 'single': 2500, 'double': 4500},
-        {'min': 500, 'max': float('inf'), 'single': 1500, 'double': 2500}
+        {'min': 500, 'max': 999999, 'single': 1500, 'double': 2500}
     ],
     'a5_color_glossy': [
-        {'min': 1, 'max': float('inf'), 'single': 8000, 'double': 15000}
+        {'min': 1, 'max': 999999, 'single': 8000, 'double': 15000}
     ]
 }
 
