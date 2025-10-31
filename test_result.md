@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Complete backend API testing for TopCopy printing system including authentication, pricing, cart, and order management APIs"
+user_problem_statement: "Complete editable pricing and tariff management system for TopCopy printing admin panel. Enable admins to edit service prices and pricing tiers through the UI."
 
 backend:
   - task: "Authentication API - User Registration"
@@ -147,11 +147,14 @@ backend:
     file: "/app/backend/routes/pricing.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: true
           agent: "testing"
           comment: "✓ GET /api/pricing/ tested successfully. Returns complete pricing structure with 3 paper sizes (A3, A4, A5), color classes, print types, and 8 services including pricing tiers."
+        - working: "NA"
+          agent: "main"
+          comment: "Updated to use database-backed pricing system. Now fetches from MongoDB with fallback to hardcoded values. Needs retesting."
 
   - task: "Pricing API - Calculate Price"
     implemented: true
@@ -159,11 +162,62 @@ backend:
     file: "/app/backend/routes/pricing.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: true
           agent: "testing"
           comment: "✓ POST /api/pricing/calculate tested successfully. Calculation for A4 black & white simple, single-sided, 100 pages, 5 copies returns correct results: 500 total pages, 990 per page, 495,000 total cost. Mathematical accuracy verified."
+        - working: "NA"
+          agent: "main"
+          comment: "Updated to use database-backed pricing system. Calculation logic now reads from MongoDB. Needs retesting."
+
+  - task: "Admin Pricing - Get Pricing Config"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/routes/admin.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "GET /api/admin/pricing - Enhanced to fetch from database with auto-initialization if not exists. Returns paper_sizes, color_classes, print_types, services, and pricing_tiers."
+
+  - task: "Admin Pricing - Initialize Pricing"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/routes/admin.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "POST /api/admin/pricing/initialize - New endpoint to initialize or reset pricing config to default hardcoded values. Uses upsert to replace existing config."
+
+  - task: "Admin Pricing - Update Service Price"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/routes/admin.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "PUT /api/admin/pricing/service/{service_id} - New endpoint to update service pricing. Accepts price and optional min_pages. Updates specific service in database."
+
+  - task: "Admin Pricing - Update Pricing Tier"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/routes/admin.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "PUT /api/admin/pricing/tier/{color_class_id}/{tier_index} - New endpoint to update pricing tiers. Accepts min, max, single, double prices. Updates specific tier in database."
 
   - task: "Cart API - Add to Cart"
     implemented: true
@@ -226,21 +280,84 @@ backend:
           comment: "✓ GET /api/orders/ tested successfully. Retrieves user's order history with authentication. Returns list of orders with correct details (ID, status, total amount, items)."
 
 frontend:
-  # No frontend testing performed as per instructions
+  - task: "Admin Pricing Management UI"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminPricing.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Enhanced with working Edit buttons for services and pricing tiers. Navigation updated to use correct routes with color_class_id and tier_index parameters."
+
+  - task: "Admin Edit Service Page"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminEditService.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "New page created for editing service prices. Includes form with price and min_pages fields. Validates input and calls PUT /api/admin/pricing/service/{serviceId}."
+
+  - task: "Admin Edit Pricing Tier Page"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminEditPricingTier.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "New page created for editing pricing tiers. Includes form with min, max, single, double price fields. Validates ranges and calls PUT /api/admin/pricing/tier/{colorClassId}/{tierIndex}."
+
+  - task: "Admin API Service Layer"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/services/adminApi.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Added new API methods: initializePricing(), updateServicePrice(serviceId, data), updatePricingTier(colorClassId, tierIndex, data)."
+
+  - task: "App Routing Configuration"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Updated routes to include /admin/pricing/edit/service/:serviceId and /admin/pricing/edit/:colorClassId/:tierIndex paths."
 
 metadata:
-  created_by: "testing_agent"
-  version: "1.0"
-  test_sequence: 1
+  created_by: "main_agent"
+  version: "2.0"
+  test_sequence: 2
   run_ui: false
 
 test_plan:
   current_focus:
-    - "All backend APIs tested and verified"
+    - "Admin Pricing - Initialize Pricing"
+    - "Admin Pricing - Update Service Price"
+    - "Admin Pricing - Update Pricing Tier"
+    - "Admin Pricing - Get Pricing Config"
+    - "Pricing API - Get Pricing Data (database integration)"
+    - "Pricing API - Calculate Price (database integration)"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
-    - agent: "testing"
-      message: "Comprehensive backend API testing completed successfully. All 10 critical APIs (authentication, pricing, cart, orders) are working correctly with proper status codes (200/201), accurate calculations, and correct data persistence. Created backend_test.py for automated testing. All pricing calculations verified mathematically. Authentication flow works end-to-end. Cart and order management functions properly."
+    - agent: "main"
+      message: "Complete editable pricing management system implemented. Database-backed pricing with MongoDB. Three new admin endpoints: initialize, update service, update tier. Two new frontend pages: AdminEditService and AdminEditPricingTier. Updated pricing routes to fetch from database. All edit buttons now functional. Ready for backend testing."
