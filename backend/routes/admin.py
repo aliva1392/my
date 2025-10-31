@@ -114,6 +114,8 @@ async def get_order_detail(order_id: str, admin_id: str = Depends(verify_admin))
     if not order:
         raise HTTPException(status_code=404, detail="سفارش پیدا نشد")
     
+    order.pop('_id', None)  # Remove MongoDB _id
+    
     # Get user info
     user = await db.users.find_one({"id": order['user_id']})
     if user:
