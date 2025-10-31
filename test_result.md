@@ -209,15 +209,18 @@ backend:
 
   - task: "Admin Pricing - Update Service Price"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/routes/admin.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "PUT /api/admin/pricing/service/{service_id} - New endpoint to update service pricing. Accepts price and optional min_pages. Updates specific service in database."
+        - working: true
+          agent: "testing"
+          comment: "✓ PUT /api/admin/pricing/service/{service_id} tested successfully. Updated hotglue service price from 15000 to 20000. Persists in MongoDB. Returns 404 for invalid service_id. Requires admin authentication."
 
   - task: "Admin Pricing - Update Pricing Tier"
     implemented: true
