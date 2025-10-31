@@ -92,8 +92,9 @@ async def get_all_orders(
     orders = await db.orders.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     total = await db.orders.count_documents(query)
     
-    # Get user info for each order
+    # Get user info for each order and remove _id
     for order in orders:
+        order.pop('_id', None)  # Remove MongoDB _id
         user = await db.users.find_one({"id": order['user_id']})
         if user:
             order['user_name'] = user.get('name', 'نامشخص')
