@@ -15,6 +15,9 @@ export const adminAPI = {
   
   // Pricing
   getPricing: () => api.get('/admin/pricing'),
+  initializePricing: () => api.post('/admin/pricing/initialize'),
+  updateServicePrice: (serviceId, data) => api.put(`/admin/pricing/service/${serviceId}`, data),
+  updatePricingTier: (colorClassId, tierIndex, data) => api.put(`/admin/pricing/tier/${colorClassId}/${tierIndex}`, data),
 };
 
 export default adminAPI;
