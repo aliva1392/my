@@ -194,15 +194,18 @@ backend:
 
   - task: "Admin Pricing - Initialize Pricing"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/routes/admin.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "POST /api/admin/pricing/initialize - New endpoint to initialize or reset pricing config to default hardcoded values. Uses upsert to replace existing config."
+        - working: true
+          agent: "testing"
+          comment: "✓ POST /api/admin/pricing/initialize tested successfully. Requires admin authentication. Resets pricing config to default hardcoded values in MongoDB. Uses upsert operation correctly."
 
   - task: "Admin Pricing - Update Service Price"
     implemented: true
