@@ -222,11 +222,11 @@ const AdminPricing = () => {
           </Card>
 
           {/* Info */}
-          <Card className="bg-blue-50 border-blue-200">
+          <Card className="bg-green-50 border-green-200">
             <CardContent className="p-4">
-              <p className="text-sm text-blue-800">
-                <strong>نکته:</strong> برای ویرایش نرخ‌ها، لطفاً فایل <code className="bg-blue-100 px-2 py-1 rounded">backend/utils/pricing.py</code> را ویرایش کنید.
-                در آینده این بخش به پنل اضافه خواهد شد.
+              <p className="text-sm text-green-800">
+                <strong>نکته:</strong> برای ویرایش هر خدمت یا تعرفه، روی دکمه "ویرایش" کلیک کنید. 
+                تغییرات بلافاصله در سیستم اعمال خواهد شد.
               </p>
             </CardContent>
           </Card>
