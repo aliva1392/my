@@ -30,6 +30,7 @@ const Printing = () => {
   const [orderNotes, setOrderNotes] = useState('');
   const [fileMethod, setFileMethod] = useState('upload');
   const [fileDetails, setFileDetails] = useState('');
+  const [uploadedFiles, setUploadedFiles] = useState([]); // آرایه فایل‌های آپلود شده
   
   const [cart, setCart] = useState([]);
   const [loadingCart, setLoadingCart] = useState(false);
