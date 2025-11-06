@@ -386,13 +386,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Admin Pricing - Initialize Pricing"
-    - "Admin Pricing - Update Service Price"
-    - "Admin Pricing - Update Pricing Tier"
-    - "Admin Pricing - Get Pricing Config"
-    - "Pricing API - Get Pricing Data (database integration)"
-    - "Pricing API - Calculate Price (database integration)"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
