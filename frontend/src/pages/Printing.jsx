@@ -37,6 +37,7 @@ const Printing = () => {
   const [currentPrice, setCurrentPrice] = useState(0);
   const [serviceCost, setServiceCost] = useState(0);
   const [calculating, setCalculating] = useState(false);
+  const [priceDetails, setPriceDetails] = useState(null); // ذخیره جزئیات قیمت از API
 
   useEffect(() => {
     const loadPricing = async () => {
