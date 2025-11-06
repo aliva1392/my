@@ -91,10 +91,11 @@ async def calculate_pricing(request: PriceCalculationRequest):
     total_sheets = sheets_per_copy * request.copies
     
     # قیمت هر برگ بر اساس تعداد کل برگ و تعرفه
+    # CRITICAL FIX: Use 'single' price for all sheet-based calculations
     price_per_sheet = calculate_price_from_config(
         pricing_config.get('pricing_tiers', {}),
         request.color_class,
-        request.print_type,
+        'single',  # Always use single price for sheet-based pricing
         total_sheets
     )
     
