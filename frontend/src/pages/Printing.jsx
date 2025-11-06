@@ -360,7 +360,7 @@ const Printing = () => {
                   <h3 className="font-semibold text-lg mb-4">انتخاب و ارسال فایل</h3>
                   <div className="flex gap-2 mb-4 flex-wrap">
                     <Button variant={fileMethod === 'upload' ? 'default' : 'outline'} size="sm" onClick={() => setFileMethod('upload')}>
-                      <Upload className="h-4 w-4 ml-2" />آپلود
+                      <Upload className="h-4 w-4 ml-2" />آپلود فایل
                     </Button>
                     <Button variant={fileMethod === 'whatsapp' ? 'default' : 'outline'} size="sm" onClick={() => setFileMethod('whatsapp')}>
                       <MessageCircle className="h-4 w-4 ml-2" />واتساپ
@@ -375,7 +375,70 @@ const Printing = () => {
                       <Mail className="h-4 w-4 ml-2" />ایمیل
                     </Button>
                   </div>
-                  <Input type="text" value={fileDetails} onChange={(e) => setFileDetails(e.target.value)} placeholder="توضیحات فایل/شماره یا آی دی اکانت خود را وارد نمایید" />
+                  
+                  {fileMethod === 'upload' ? (
+                    <div className="space-y-4">
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                        <input
+                          type="file"
+                          id="file-upload"
+                          multiple
+                          onChange={handleFileUpload}
+                          className="hidden"
+                          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip,.rar"
+                        />
+                        <label htmlFor="file-upload" className="cursor-pointer">
+                          <Upload className="h-12 w-12 mx-auto text-gray-400 mb-3" />
+                          <p className="text-gray-600 mb-1">
+                            کلیک کنید یا فایل‌ها را اینجا بکشید
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            PDF, DOC, DOCX, JPG, PNG, ZIP, RAR (حداکثر 50MB)
+                          </p>
+                        </label>
+                      </div>
+                      
+                      {uploadedFiles.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="font-semibold text-sm">فایل‌های آپلود شده:</h4>
+                          {uploadedFiles.map((file) => (
+                            <div key={file.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded flex items-center justify-center">
+                                  <Upload className="h-5 w-5 text-blue-600" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-sm truncate">{file.name}</p>
+                                  <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleRemoveFile(file.id)}
+                                className="flex-shrink-0"
+                              >
+                                <Trash2 className="h-4 w-4 text-red-500" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Input 
+                      type="text" 
+                      value={fileDetails} 
+                      onChange={(e) => setFileDetails(e.target.value)} 
+                      placeholder={
+                        fileMethod === 'whatsapp' ? 'شماره واتساپ خود را وارد کنید' :
+                        fileMethod === 'telegram' ? 'آی‌دی تلگرام خود را وارد کنید' :
+                        fileMethod === 'link' ? 'لینک فایل را وارد کنید' :
+                        fileMethod === 'email' ? 'ایمیل خود را وارد کنید' :
+                        'توضیحات را وارد کنید'
+                      }
+                    />
+                  )}
                 </div>
               </CardContent>
             </Card>
