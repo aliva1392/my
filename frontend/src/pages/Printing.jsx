@@ -85,15 +85,18 @@ const Printing = () => {
             copies: parseInt(copies),
             service: selectedService
           });
+          setPriceDetails(response.data); // ذخیره تمام جزئیات
           setCurrentPrice(response.data.price_per_copy);
           setServiceCost(response.data.service_cost);
         } catch (error) {
           console.error('Error calculating price:', error);
+          setPriceDetails(null);
           setCurrentPrice(0);
           setServiceCost(0);
         }
         setCalculating(false);
       } else {
+        setPriceDetails(null);
         setCurrentPrice(0);
         setServiceCost(0);
       }
