@@ -139,42 +139,193 @@ class APITester:
             self.log(f"Get pricing failed: {response.get('data', {}).get('detail', 'Unknown error')}", "ERROR")
             return False
 
-    def test_pricing_calculate(self) -> bool:
-        """Test price calculation"""
-        self.log("Testing price calculation...")
+    def test_pricing_calculate_sheet_based(self) -> bool:
+        """Test CRITICAL FIX: sheet vs page calculation"""
+        self.log("Testing CRITICAL FIX: sheet vs page calculation...")
         
-        # Test case: A4, سیاه سفید معمولی، تک رو، 100 صفحه، 5 سری
-        calc_data = {
-            "color_class": "a4_bw_simple",
-            "print_type": "single",
-            "pages": 100,
-            "copies": 5,
-            "service": "none"
-        }
+        test_cases = [
+            {
+                "name": "Single-sided test (100 pages = 100 sheets)",
+                "data": {
+                    "color_class": "a4_bw_simple",
+                    "print_type": "single",
+                    "pages": 100,
+                    "copies": 1,
+                    "service": "none"
+                },
+                "expected_sheets_per_copy": 100,
+                "expected_total_sheets": 100
+            },
+            {
+                "name": "Double-sided test (100 pages = 50 sheets)",
+                "data": {
+                    "color_class": "a4_bw_simple",
+                    "print_type": "double",
+                    "pages": 100,
+                    "copies": 1,
+                    "service": "none"
+                },
+                "expected_sheets_per_copy": 50,
+                "expected_total_sheets": 50
+            },
+            {
+                "name": "Double-sided odd pages (101 pages = 51 sheets)",
+                "data": {
+                    "color_class": "a4_bw_simple",
+                    "print_type": "double",
+                    "pages": 101,
+                    "copies": 1,
+                    "service": "none"
+                },
+                "expected_sheets_per_copy": 51,
+                "expected_total_sheets": 51
+            },
+            {
+                "name": "Multiple copies single-sided (50 pages × 5 copies = 250 sheets)",
+                "data": {
+                    "color_class": "a4_bw_simple",
+                    "print_type": "single",
+                    "pages": 50,
+                    "copies": 5,
+                    "service": "none"
+                },
+                "expected_sheets_per_copy": 50,
+                "expected_total_sheets": 250
+            },
+            {
+                "name": "Multiple copies double-sided (50 pages × 5 copies = 125 sheets)",
+                "data": {
+                    "color_class": "a4_bw_simple",
+                    "print_type": "double",
+                    "pages": 50,
+                    "copies": 5,
+                    "service": "none"
+                },
+                "expected_sheets_per_copy": 25,
+                "expected_total_sheets": 125
+            }
+        ]
         
-        response = self.make_request("POST", "/pricing/calculate", calc_data)
+        all_passed = True
         
-        if response["success"]:
+        for test_case in test_cases:
+            self.log(f"\n  Testing: {test_case['name']}")
+            
+            response = self.make_request("POST", "/pricing/calculate", test_case["data"])
+            
+            if not response["success"]:
+                self.log(f"  ✗ Request failed: {response.get('data', {}).get('detail', 'Unknown error')}", "ERROR")
+                all_passed = False
+                continue
+                
             result = response["data"]
-            total_pages = result.get("total_pages")
-            price_per_page = result.get("price_per_page")
+            
+            # Check new response structure
+            required_fields = ["price_per_sheet", "sheets_per_copy", "total_sheets", "price_per_copy", "service_cost", "total"]
+            missing_fields = [field for field in required_fields if field not in result]
+            
+            if missing_fields:
+                self.log(f"  ✗ Missing fields in response: {missing_fields}", "ERROR")
+                all_passed = False
+                continue
+            
+            # Verify sheet calculations
+            sheets_per_copy = result.get("sheets_per_copy")
+            total_sheets = result.get("total_sheets")
+            price_per_sheet = result.get("price_per_sheet")
+            price_per_copy = result.get("price_per_copy")
+            service_cost = result.get("service_cost")
             total = result.get("total")
             
-            self.log(f"Price calculation successful:")
-            self.log(f"  Total pages: {total_pages}")
-            self.log(f"  Price per page: {price_per_page}")
-            self.log(f"  Total cost: {total}")
-            
-            # Verify calculation logic
-            expected_total_pages = 100 * 5  # 500 pages
-            if total_pages == expected_total_pages:
-                self.log("✓ Total pages calculation correct")
-                return True
+            # Check sheets_per_copy
+            if sheets_per_copy != test_case["expected_sheets_per_copy"]:
+                self.log(f"  ✗ sheets_per_copy incorrect. Expected: {test_case['expected_sheets_per_copy']}, Got: {sheets_per_copy}", "ERROR")
+                all_passed = False
             else:
-                self.log(f"✗ Total pages calculation incorrect. Expected: {expected_total_pages}, Got: {total_pages}", "ERROR")
+                self.log(f"  ✓ sheets_per_copy correct: {sheets_per_copy}")
+            
+            # Check total_sheets
+            if total_sheets != test_case["expected_total_sheets"]:
+                self.log(f"  ✗ total_sheets incorrect. Expected: {test_case['expected_total_sheets']}, Got: {total_sheets}", "ERROR")
+                all_passed = False
+            else:
+                self.log(f"  ✓ total_sheets correct: {total_sheets}")
+            
+            # Verify mathematical relationships
+            expected_price_per_copy = sheets_per_copy * price_per_sheet
+            if abs(price_per_copy - expected_price_per_copy) > 0.01:
+                self.log(f"  ✗ price_per_copy calculation incorrect. Expected: {expected_price_per_copy}, Got: {price_per_copy}", "ERROR")
+                all_passed = False
+            else:
+                self.log(f"  ✓ price_per_copy calculation correct: {price_per_copy}")
+            
+            expected_total = (price_per_copy * test_case["data"]["copies"]) + service_cost
+            if abs(total - expected_total) > 0.01:
+                self.log(f"  ✗ total calculation incorrect. Expected: {expected_total}, Got: {total}", "ERROR")
+                all_passed = False
+            else:
+                self.log(f"  ✓ total calculation correct: {total}")
+                
+            self.log(f"  Response: sheets_per_copy={sheets_per_copy}, total_sheets={total_sheets}, price_per_sheet={price_per_sheet}")
+        
+        return all_passed
+
+    def test_pricing_tier_based_on_sheets(self) -> bool:
+        """Test that pricing tiers are applied based on total_sheets, not total_pages"""
+        self.log("Testing pricing tiers based on sheets...")
+        
+        # Compare: 100 pages single vs 200 pages double (both = 100 sheets) should get same tier
+        test_cases = [
+            {
+                "name": "100 pages single-sided (100 sheets)",
+                "data": {
+                    "color_class": "a4_bw_simple",
+                    "print_type": "single",
+                    "pages": 100,
+                    "copies": 1,
+                    "service": "none"
+                }
+            },
+            {
+                "name": "200 pages double-sided (100 sheets)",
+                "data": {
+                    "color_class": "a4_bw_simple",
+                    "print_type": "double",
+                    "pages": 200,
+                    "copies": 1,
+                    "service": "none"
+                }
+            }
+        ]
+        
+        results = []
+        
+        for test_case in test_cases:
+            self.log(f"\n  Testing: {test_case['name']}")
+            
+            response = self.make_request("POST", "/pricing/calculate", test_case["data"])
+            
+            if not response["success"]:
+                self.log(f"  ✗ Request failed: {response.get('data', {}).get('detail', 'Unknown error')}", "ERROR")
                 return False
+                
+            result = response["data"]
+            results.append(result)
+            
+            self.log(f"  total_sheets: {result.get('total_sheets')}, price_per_sheet: {result.get('price_per_sheet')}")
+        
+        # Both should have same total_sheets and price_per_sheet (same tier)
+        if results[0]["total_sheets"] == results[1]["total_sheets"] == 100:
+            self.log("  ✓ Both scenarios have 100 total_sheets")
         else:
-            self.log(f"Price calculation failed: {response.get('data', {}).get('detail', 'Unknown error')}", "ERROR")
+            self.log(f"  ✗ total_sheets mismatch: {results[0]['total_sheets']} vs {results[1]['total_sheets']}", "ERROR")
+            return False
+            
+        if results[0]["price_per_sheet"] == results[1]["price_per_sheet"]:
+            self.log(f"  ✓ Same pricing tier applied (price_per_sheet: {results[0]['price_per_sheet']})")
+            return True
+        else:
+            self.log(f"  ✗ Different pricing tiers: {results[0]['price_per_sheet']} vs {results[1]['price_per_sheet']}", "ERROR")
             return False
 
     def test_cart_add(self) -> bool:
