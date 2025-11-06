@@ -171,6 +171,14 @@ const Printing = () => {
   };
 
   const totalPages = pages && copies ? parseInt(pages) * parseInt(copies) : 0;
+  
+  // محاسبه تعداد برگ بر اساس نوع چاپ
+  const totalSheets = priceDetails?.total_sheets || 
+    (pages && copies && printType ? (
+      printType === 'double' 
+        ? Math.ceil(parseInt(pages) / 2) * parseInt(copies)
+        : parseInt(pages) * parseInt(copies)
+    ) : 0);
   const totalAmount = currentPrice * (copies ? parseInt(copies) : 0) + serviceCost;
   const cartTotal = cart.reduce((sum, item) => sum + item.total_price, 0);
 
