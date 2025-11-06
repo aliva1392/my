@@ -361,15 +361,23 @@ const Printing = () => {
                   <>
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">تعداد برگه:</span>
-                        <span className="font-semibold">{totalPages.toLocaleString('fa-IR')} برگه</span>
+                        <span className="text-gray-600">تعداد صفحات:</span>
+                        <span className="font-semibold">{totalPages.toLocaleString('fa-IR')} صفحه</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">هر برگه:</span>
-                        <span className="font-semibold">{currentPrice.toLocaleString('fa-IR')} تومان</span>
+                        <span className="text-gray-600">تعداد برگ ({printType === 'double' ? 'دورو' : 'تک‌رو'}):</span>
+                        <span className="font-semibold">{totalSheets.toLocaleString('fa-IR')} برگ</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">قیمت هر برگ:</span>
+                        <span className="font-semibold">{(priceDetails?.price_per_sheet || 0).toLocaleString('fa-IR')} تومان</span>
                       </div>
                       <div className="flex justify-between pt-3 border-t">
-                        <span className="text-gray-600">مجموع:</span>
+                        <span className="text-gray-600">قیمت هر نسخه:</span>
+                        <span className="font-semibold">{currentPrice.toLocaleString('fa-IR')} تومان</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">مجموع ({copies} نسخه):</span>
                         <span className="font-semibold text-lg">{(currentPrice * (copies ? parseInt(copies) : 0)).toLocaleString('fa-IR')} تومان</span>
                       </div>
                       <div className="flex justify-between">
