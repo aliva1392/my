@@ -148,8 +148,24 @@ const Printing = () => {
       toast({ title: 'خطا', description: 'لطفاً تمام فیلدهای الزامی را پر کنید', variant: 'destructive' });
       return;
     }
+    
+    // بررسی فایل
+    if (fileMethod === 'upload' && uploadedFiles.length === 0) {
+      toast({ 
+        title: 'هشدار', 
+        description: 'لطفاً حداقل یک فایل آپلود کنید یا روش ارسال دیگری انتخاب کنید',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
     setLoadingCart(true);
     try {
+      // اگر فایل آپلود شده، نام فایل‌ها را ذخیره کن
+      const fileInfo = fileMethod === 'upload' 
+        ? uploadedFiles.map(f => f.name).join(', ')
+        : fileDetails;
+        
       await cartAPI.addToCart({
         paper_size: paperSize,
         color_class: colorClass,
@@ -162,10 +178,12 @@ const Printing = () => {
         total_price: (currentPrice * parseInt(copies)) + serviceCost,
         notes: orderNotes,
         file_method: fileMethod,
-        file_details: fileDetails
+        file_details: fileInfo
       });
       toast({ title: 'موفق', description: 'سفارش به سبد خرید اضافه شد' });
       await loadCart();
+      
+      // پاک کردن فرم
       setPaperSize('');
       setColorClass('');
       setPrintType('');
@@ -174,6 +192,7 @@ const Printing = () => {
       setSelectedService('none');
       setOrderNotes('');
       setFileDetails('');
+      setUploadedFiles([]);
     } catch (error) {
       toast({ title: 'خطا', description: error.response?.data?.detail || 'خطا در افزودن به سبد خرید', variant: 'destructive' });
     }
