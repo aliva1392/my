@@ -161,11 +161,11 @@ backend:
 
   - task: "Pricing API - Calculate Price"
     implemented: true
-    working: true
+    working: "NA"
     file: "/app/backend/routes/pricing.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: true
           agent: "testing"
@@ -176,6 +176,12 @@ backend:
         - working: true
           agent: "testing"
           comment: "✓ Database integration tested successfully. POST /api/pricing/calculate now uses MongoDB pricing data. Verified updated prices: tier 0 single=1200, hotglue service=20000. Calculations accurate with database values."
+        - working: "NA"
+          agent: "main"
+          comment: "CRITICAL FIX: Updated calculation logic to properly differentiate single-sided vs double-sided printing. Single-sided: 1 page = 1 sheet. Double-sided: 2 pages = 1 sheet (rounded up). Pricing tiers now based on total sheets, not pages. Response structure changed: price_per_sheet, sheets_per_copy, total_sheets. Needs retesting."
+        - working: "NA"
+          agent: "user"
+          comment: "User reported: هر صفحه در چاپ یک رو میشه یک برگ و هر دو صفحه در چاپ دورو میشه یک برگ - Fixed calculation logic accordingly."
 
   - task: "Admin Pricing - Get Pricing Config"
     implemented: true
