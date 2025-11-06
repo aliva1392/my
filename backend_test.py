@@ -605,7 +605,7 @@ class APITester:
         # Update a4_bw_simple tier 0: change single from 1190 to 1200
         tier_data = {
             "min": 1,
-            "max": 100,
+            "max": 499,  # Keep original max to avoid gaps
             "single": 1200,  # Changed from 1190
             "double": 990
         }
