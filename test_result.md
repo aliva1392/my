@@ -364,6 +364,18 @@ frontend:
           agent: "main"
           comment: "Updated to properly display sheets vs pages. Shows: total pages, total sheets (with print type indicator), price per sheet, price per copy, total for all copies, service cost. Calculates sheets correctly: single-sided (pages = sheets), double-sided (pages/2 = sheets, rounded up)."
 
+  - task: "App Routing Configuration"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Updated routes to include /admin/pricing/edit/service/:serviceId and /admin/pricing/edit/:colorClassId/:tierIndex paths."
+
 metadata:
   created_by: "main_agent"
   version: "2.1"
