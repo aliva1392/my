@@ -161,11 +161,11 @@ backend:
 
   - task: "Pricing API - Calculate Price"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/routes/pricing.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "testing"
@@ -182,6 +182,9 @@ backend:
         - working: "NA"
           agent: "user"
           comment: "User reported: هر صفحه در چاپ یک رو میشه یک برگ و هر دو صفحه در چاپ دورو میشه یک برگ - Fixed calculation logic accordingly."
+        - working: true
+          agent: "testing"
+          comment: "✅ CRITICAL FIX VERIFIED: Sheet vs page calculation working perfectly. All test scenarios pass: 1) Single-sided (100 pages = 100 sheets), 2) Double-sided (100 pages = 50 sheets), 3) Odd pages double-sided (101 pages = 51 sheets), 4) Multiple copies calculations. New response structure confirmed: price_per_sheet, sheets_per_copy, total_sheets, price_per_copy, service_cost, total. Pricing tiers correctly applied based on total_sheets. Same sheet count gets same price regardless of print type. Fixed bug where pricing still used print_type - now uses 'single' price for all sheet-based calculations. Mathematical accuracy verified for all scenarios."
 
   - task: "Admin Pricing - Get Pricing Config"
     implemented: true
