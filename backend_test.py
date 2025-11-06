@@ -753,7 +753,8 @@ class APITester:
         # Updated Pricing Tests (Database Integration)
         self.log("\n--- PRICING TESTS (DATABASE INTEGRATION) ---")
         results["pricing_list"] = self.test_pricing_list()
-        results["pricing_calculate"] = self.test_pricing_calculate()
+        results["pricing_calculate_sheet_based"] = self.test_pricing_calculate_sheet_based()
+        results["pricing_tier_based_on_sheets"] = self.test_pricing_tier_based_on_sheets()
         results["pricing_database_integration"] = self.test_pricing_database_integration()
         
         # Cart Tests
