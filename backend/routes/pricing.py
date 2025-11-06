@@ -53,11 +53,12 @@ class PriceCalculationRequest(BaseModel):
     service: str = 'none'
 
 class PriceCalculationResponse(BaseModel):
-    price_per_page: float
-    total_pages: int
-    price_per_copy: float
-    service_cost: float
-    total: float
+    price_per_sheet: float  # قیمت هر برگ
+    sheets_per_copy: int    # تعداد برگ در هر نسخه
+    total_sheets: int       # تعداد کل برگ
+    price_per_copy: float   # قیمت هر نسخه
+    service_cost: float     # هزینه خدمات
+    total: float           # قیمت نهایی
 
 @router.get("/")
 async def get_pricing_data():
@@ -75,24 +76,45 @@ async def get_pricing_data():
 async def calculate_pricing(request: PriceCalculationRequest):
     pricing_config = await get_pricing_from_db()
     
-    total_pages = request.pages * request.copies
-    price_per_page = calculate_price_from_config(
+    # محاسبه تعداد برگ بر اساس نوع چاپ
+    # تک‌رو: هر صفحه = یک برگ
+    # دورو: هر دو صفحه = یک برگ
+    if request.print_type == 'double':
+        # چاپ دورو: تعداد صفحات تقسیم بر 2 (با رند به سمت بالا)
+        import math
+        sheets_per_copy = math.ceil(request.pages / 2)
+    else:
+        # چاپ تک‌رو: تعداد صفحات = تعداد برگ
+        sheets_per_copy = request.pages
+    
+    # تعداد کل برگ برای همه نسخه‌ها
+    total_sheets = sheets_per_copy * request.copies
+    
+    # قیمت هر برگ بر اساس تعداد کل برگ و تعرفه
+    price_per_sheet = calculate_price_from_config(
         pricing_config.get('pricing_tiers', {}),
         request.color_class,
         request.print_type,
-        total_pages
+        total_sheets
     )
-    price_per_copy = price_per_page * request.pages
+    
+    # قیمت هر نسخه = تعداد برگ در هر نسخه × قیمت هر برگ
+    price_per_copy = sheets_per_copy * price_per_sheet
+    
+    # هزینه خدمات (بر اساس تعداد صفحات)
     service_cost = get_service_cost_from_config(
         pricing_config.get('services', []),
         request.service,
         request.pages
     )
+    
+    # قیمت نهایی
     total = (price_per_copy * request.copies) + service_cost
     
     return PriceCalculationResponse(
-        price_per_page=price_per_page,
-        total_pages=total_pages,
+        price_per_sheet=price_per_sheet,
+        sheets_per_copy=sheets_per_copy,
+        total_sheets=total_sheets,
         price_per_copy=price_per_copy,
         service_cost=service_cost,
         total=total
