@@ -70,6 +70,39 @@ const Printing = () => {
     }
   };
 
+  const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      const newFiles = files.map(file => ({
+        id: Date.now() + Math.random(),
+        name: file.name,
+        size: file.size,
+        file: file
+      }));
+      setUploadedFiles([...uploadedFiles, ...newFiles]);
+      toast({
+        title: 'موفق',
+        description: `${files.length} فایل آپلود شد`,
+      });
+    }
+  };
+
+  const handleRemoveFile = (fileId) => {
+    setUploadedFiles(uploadedFiles.filter(f => f.id !== fileId));
+    toast({
+      title: 'حذف شد',
+      description: 'فایل با موفقیت حذف شد',
+    });
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  };
+
   const availableColorClasses = paperSize ? colorClasses[paperSize] : [];
   const selectedColorClassObj = availableColorClasses.find(c => c.id === colorClass);
   const availablePrintTypes = selectedColorClassObj ? printTypes[selectedColorClassObj.type] : [];
