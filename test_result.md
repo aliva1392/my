@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Complete editable pricing and tariff management system for TopCopy printing admin panel. Enable admins to edit service prices and pricing tiers through the UI."
+user_problem_statement: "تکمیل سیستم مدیریت آدرس‌ها، کد تخفیف، و بهبودهای UI/UX در TopCopy printing system"
 
 backend:
   - task: "Authentication API - User Registration"
