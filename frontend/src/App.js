@@ -14,6 +14,7 @@ import AdminUserDetail from "./pages/AdminUserDetail";
 import AdminPricing from "./pages/AdminPricing";
 import AdminEditService from "./pages/AdminEditService";
 import AdminEditPricingTier from "./pages/AdminEditPricingTier";
+import AddressManagement from "./pages/AddressManagement";
 import { Toaster } from "./components/ui/toaster";
 
 function App() {
