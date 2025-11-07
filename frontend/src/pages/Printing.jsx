@@ -265,6 +265,10 @@ const Printing = () => {
                     <img src="https://panel.topcopy.ir/dist/images/no-user.png" alt="کاربر" className="w-10 h-10 rounded-full" />
                     <div><p className="text-sm font-semibold">{user?.name || user?.phone}</p></div>
                   </div>
+                  <Button variant="outline" size="sm" onClick={() => navigate('/addresses')}>
+                    <MapPin className="h-4 w-4 ml-1" />
+                    آدرس‌ها
+                  </Button>
                   <Button variant="outline" size="sm" onClick={logout}>خروج</Button>
                 </>
               ) : (
