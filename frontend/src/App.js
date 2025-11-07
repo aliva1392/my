@@ -36,6 +36,7 @@ function App() {
             <Route path="/admin/pricing" element={<AdminPricing />} />
             <Route path="/admin/pricing/edit/service/:serviceId" element={<AdminEditService />} />
             <Route path="/admin/pricing/edit/:colorClassId/:tierIndex" element={<AdminEditPricingTier />} />
+            <Route path="/addresses" element={<AddressManagement />} />
           </Routes>
           <Toaster />
         </AuthProvider>
