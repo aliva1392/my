@@ -78,8 +78,8 @@ api_router.include_router(pricing_router)
 api_router.include_router(cart_router)
 api_router.include_router(orders_router)
 api_router.include_router(admin_router)
-api_router.include_router(pricing_admin_router)
-api_router.include_router(admin_router)
+api_router.include_router(addresses_router)
+api_router.include_router(coupons_router)
 
 # Include the router in the main app
 app.include_router(api_router)
