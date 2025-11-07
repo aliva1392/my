@@ -23,8 +23,8 @@ class AddressCreate(BaseModel):
     province: str = Field(..., min_length=1, max_length=100)
     city: str = Field(..., min_length=1, max_length=100)
     full_address: str = Field(..., min_length=5, max_length=500)
-    postal_code: str = Field(..., regex=r'^\d{10}$')  # کدپستی 10 رقمی
-    phone: str = Field(..., regex=r'^09\d{9}$')  # شماره موبایل ایران
+    postal_code: str = Field(..., pattern=r'^\d{10}$')  # کدپستی 10 رقمی
+    phone: str = Field(..., pattern=r'^09\d{9}$')  # شماره موبایل ایران
     latitude: Optional[float] = Field(None, ge=-90, le=90)
     longitude: Optional[float] = Field(None, ge=-180, le=180)
     is_default: bool = False
@@ -34,8 +34,8 @@ class AddressUpdate(BaseModel):
     province: Optional[str] = Field(None, min_length=1, max_length=100)
     city: Optional[str] = Field(None, min_length=1, max_length=100)
     full_address: Optional[str] = Field(None, min_length=5, max_length=500)
-    postal_code: Optional[str] = Field(None, regex=r'^\d{10}$')
-    phone: Optional[str] = Field(None, regex=r'^09\d{9}$')
+    postal_code: Optional[str] = Field(None, pattern=r'^\d{10}$')
+    phone: Optional[str] = Field(None, pattern=r'^09\d{9}$')
     latitude: Optional[float] = Field(None, ge=-90, le=90)
     longitude: Optional[float] = Field(None, ge=-180, le=180)
     is_default: Optional[bool] = None
